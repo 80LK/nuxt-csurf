@@ -1,10 +1,11 @@
 import type { FetchContext, ResponseType } from 'ofetch'
-import { useCsrf } from './composables'
 
-export function onRequest({ options }: FetchContext<any, ResponseType>) {
-  const { csrf, headerName } = useCsrf()
-  if (!options.headers || !(options.headers instanceof Headers)) {
-    options.headers = new Headers(options.headers || {})
+export function onRequestBuilder(ctx: { csrf: string, headerName: string }): (context: FetchContext<any, ResponseType>) => Promise<void> | void {
+  return ({ options }) => {
+    const { csrf, headerName } = ctx
+    if (!options.headers || !(options.headers instanceof Headers)) {
+      options.headers = new Headers(options.headers || {})
+    }
+    options.headers.append(headerName, csrf)
   }
-  options.headers.append(headerName, csrf)
 }

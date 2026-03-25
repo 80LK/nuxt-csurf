@@ -1,28 +1,7 @@
-import { $fetch, type $Fetch } from 'ofetch'
-import { useCsrf } from './composables'
 import { defineNuxtPlugin } from '#app'
+import { onRequest } from './hooks'
 
 export default defineNuxtPlugin(() => {
-  const csrfFetch = $fetch.create({
-    onRequest({ options }) {
-      const { csrf, headerName } = useCsrf()
-      options.headers = new Headers(options.headers || {})
-      options.headers.append(headerName, csrf)
-    }
-  })
-  return {
-    provide: { csrfFetch }
-  }
+  const csrfFetch = $fetch.create({ onRequest })
+  return { provide: { csrfFetch } }
 })
-
-declare module '#app' {
-  interface NuxtApp {
-    $csrfFetch: $Fetch
-  }
-}
-
-declare module 'vue' {
-  interface ComponentCustomProperties {
-    $csrfFetch: $Fetch
-  }
-}

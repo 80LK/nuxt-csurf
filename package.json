@@ -15,6 +15,10 @@
       "types": "./dist/types.d.ts",
       "import": "./dist/module.mjs",
       "require": "./dist/module.cjs"
+    },
+    "./hooks": {
+      "types": "./dist/runtime/hooks.d.ts",
+      "import": "./dist/runtime/hooks.js"
     }
   },
   "main": "./dist/module.cjs",

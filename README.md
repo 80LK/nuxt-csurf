@@ -18,7 +18,7 @@ Create a middleware for CSRF token creation and validation.
 ## Installation
 
 ```sh
-npx nuxi@latest module add csurf
+npm install github:80LK/nuxt-csurf#dist
 ```
 
 ## Global configuration

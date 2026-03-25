@@ -26,13 +26,22 @@ jobs:
       - run: yarn lint
       - run: yarn build
 
-      - name: Publish
-        if: |
-          github.event_name == 'push' &&
-          !contains(github.event.head_commit.message, '[skip-release]')
-        run:
-          yarn dlx -p semantic-release -p @semantic-release/commit-analyzer -p @semantic-release/release-notes-generator -p @semantic-release/changelog -p @semantic-release/npm -p @semantic-release/git -p @semantic-release/github semantic-release
-        env:
-          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
-          NPM_TOKEN: ${{secrets.NPM_TOKEN}}
-          NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
+      - name: Prepare dist branch
+        run: |
+          mkdir dist-branch
+          cp -r dist dist-branch/
+          cp package.json dist-branch/
+          cp README.md dist-branch/
+          cp LICENSE dist-branch/
+
+      - name: Push to dist branch
+        run: |
+          cd dist-branch
+          git init
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+          git add .
+          git commit -m "build: update dist"
+          git branch -M dist
+          git remote add origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}
+          git push -f origin dist

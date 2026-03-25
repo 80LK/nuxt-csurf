@@ -7,5 +7,5 @@ export function onRequest({ options }: FetchContext<any, ResponseType>) {
 	if (!options.headers || !(options.headers instanceof Headers)) {
 		options.headers = new Headers(options.headers || {});
 	}
-	options.headers.append(headerName, csrf)
+	options.headers.append(headerName, csrf);
 }

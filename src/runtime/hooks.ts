@@ -1,5 +1,5 @@
+import { useCsrf } from './composables'
 import type { FetchContext, ResponseType } from 'ofetch'
-import { useCsrf } from '#imports'
 
 export function onRequest({ options }: FetchContext<any, ResponseType>) {
   const { csrf, headerName } = useCsrf()

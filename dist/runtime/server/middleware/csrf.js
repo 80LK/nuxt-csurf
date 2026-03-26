@@ -1,0 +1,27 @@
+import * as csrf from "uncsrf";
+import { defineEventHandler, getCookie, getHeader, createError } from "h3";
+import { useSecretKey } from "../helpers.js";
+import { defuReplaceArray } from "../../utils.js";
+import { useRuntimeConfig, getRouteRules } from "#imports";
+const baseConfig = useRuntimeConfig().csurf;
+export default defineEventHandler(async (event) => {
+  const { csurf } = getRouteRules(event);
+  if (csurf === false || csurf?.enabled === false)
+    return;
+  const csrfConfig = defuReplaceArray(csurf, baseConfig);
+  const method = event.node.req.method ?? "";
+  const methodsToProtect = csrfConfig.methodsToProtect ?? [];
+  if (!methodsToProtect.includes(method))
+    return;
+  const secret = getCookie(event, csrfConfig.cookieKey) ?? "";
+  const token = getHeader(event, baseConfig.headerName) ?? "";
+  const isValidToken = await csrf.verify(secret, token, await useSecretKey(csrfConfig), csrfConfig.encryptAlgorithm);
+  if (!isValidToken) {
+    throw createError({
+      statusCode: 403,
+      name: "EBADCSRFTOKEN",
+      statusMessage: "CSRF Token Mismatch",
+      message: !secret ? "CSRF Cookie not found" : !token ? "CSRF Token not found" : "CSRF Token invalid"
+    });
+  }
+});

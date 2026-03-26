@@ -3,9 +3,7 @@ import { defineNuxtPlugin } from '#app'
 import { useCsrf } from '#imports'
 
 export default defineNuxtPlugin(() => {
-  const csrf = useCsrf()
-
-  const onRequest = onRequestBuilder(csrf)
+  const onRequest = onRequestBuilder(() => useCsrf())
 
   const csrfFetch = $fetch.create({ onRequest })
 
